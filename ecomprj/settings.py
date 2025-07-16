@@ -1,6 +1,6 @@
 from pathlib import Path
-import os
 from decouple import config
+import os
 
 # === BASE DIR ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -167,7 +167,7 @@ JAZZMIN_SETTINGS = {
 
 # === SECURITY (Production Only) ===
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=False, cast=bool)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_HSTS_SECONDS = 31536000
