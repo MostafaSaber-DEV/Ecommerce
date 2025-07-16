@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block styles %}
+<!-- CSS مخصص لهذه الصفحة لو عندك -->
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="section-title">
+                <h2>{{ category.title }}</h2>
+            </div>
+        </div>
+    </div>
+
+    {% if not products %}
+    <div class="row">
+            <div class="col-12">
+            <div class="alert alert-warning text-center py-5" style="border: 2px dashed #ffc107; background-color: #fffbea;">
+                <img src="{% static 'img/icon/oops.png' %}" alt="No Products" style="width: 180px; margin-bottom: 20px;" loading="lazy">
+                <h4 class="fw-bold text-dark">Oops! No products found in this category.</h4>
+                <p class="text-muted">We couldn't find any similar items right now. Check back later or explore other categories.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+                <!-- Product Grid -->
+                <div class="row">
+                    {% for product in products %}
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item {% if product.is_on_sale %}sale{% endif %}">
+                                <div class="product__item__pic set-bg" data-setbg="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/product/default.jpg' %}{% endif %}">
+                                    {% if product.is_on_sale %}
+                                        <span class="label label-sale">Sale</span>
+                                    {% elif product.is_new %}
+                                        <span class="label label-new">New</span>
+                                    {% endif %}
+                                    {% if product.is_featured %}
+                                        <span class="label label-featured">Featured</span>
+                                    {% endif %}
+                                    {% if product.is_best_seller %}
+                                        <span class="label label-bestseller">Best Seller</span>
+                                    {% endif %}
+                                    {% if product.is_verified %}
+                                        <span class="label label-verified">Verified</span>
+                                    {% endif %}
+                                    {% if product.old_price and product.old_price > product.price %}
+                                        <span class="label label-discount">Discount</span>
+                                    {% endif %}
+                                    
+                                    <ul class="product__hover">
+                                        <li>
+                                            {% if user.is_authenticated %}
+                                                {% if product.id in wishlist_product_ids %}
+                                                    <a href="{% url 'core:remove_from_wishlist' product.id %}" title="Remove from Wishlist">
+                                                        <i class="fa fa-heart" style="color:#e74c3c; font-size:22px;"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{% url 'core:add_to_wishlist' product.id %}" title="Add to Wishlist">
+                                                        <i class="fa fa-heart-o" style="color:#888; font-size:22px;"></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% else %}
+                                                <a href="{% url 'userauths:login_view' %}" title="Login to use Wishlist">
+                                                    <i class="fa fa-heart-o" style="color:#888; font-size:22px;"></i>
+                                                </a>
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="product__item__text">
+                                    <h6>{{ product.title }}</h6>
+                                    <a href="{% url 'core:product_details' product.pid %}" class="view-cart-btn">
+                                        <i class="fa fa-eye"></i> View Details
+                                    </a>
+                                    <div class="rating">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= product.rating|default:0 %}
+                                                <i class="fa fa-star"></i>
+                                            {% else %}
+                                                <i class="fa fa-star-o"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span> - {{ product.reviews.count }} review(s)</span>
+                                    </div>
+                                    <h5>
+                                        EGP{{ product.price }}
+                                        {% if product.old_price and product.old_price > product.price %}
+                                            <span style="color:#b7b7b7;font-size:16px;text-decoration:line-through;margin-left:8px;">EGP{{ product.old_price }}</span>
+                                        {% endif %}
+                                    </h5>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted">No products found for this category.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Custom scripts for this page
+</script>
+{% endblock %}
